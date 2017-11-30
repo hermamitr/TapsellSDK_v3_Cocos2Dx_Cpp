@@ -9,15 +9,25 @@ std::map<std::string, ON_EXPIRING_CB> Tapsell::onExpiringCbs;
 std::map<std::string, ON_OPENED_CB> Tapsell::onOpenedCbs;
 std::map<std::string, ON_CLOSED_CB> Tapsell::onClosedCbs;
 
+std::map<std::string, ON_NATIVE_BANNER_AD_AVAILABLE_CB> Tapsell::onNativeBannerAdAvailableCbs;
+std::map<std::string, ON_NATIVE_BANNER_ERROR_CB> Tapsell::onNativeBannerErrorCbs;
+std::map<std::string, ON_NATIVE_BANNER_NO_AD_AVAILABLE_CB> Tapsell::onNativeBannerNoAdAvailableCbs;
+std::map<std::string, ON_NATIVE_BANNER_NO_NETWORK_CB> Tapsell::onNativeBannerNoNetworkCbs;
+
+std::map<std::string, ON_NATIVE_VIDEO_AD_AVAILABLE_CB> Tapsell::onNativeVideoAdAvailableCbs;
+std::map<std::string, ON_NATIVE_VIDEO_ERROR_CB> Tapsell::onNativeVideoErrorCbs;
+std::map<std::string, ON_NATIVE_VIDEO_NO_AD_AVAILABLE_CB> Tapsell::onNativeVideoNoAdAvailableCbs;
+std::map<std::string, ON_NATIVE_VIDEO_NO_NETWORK_CB> Tapsell::onNativeVideoNoNetworkCbs;
+
 extern "C" {
 JNIEXPORT void JNICALL Java_org_cocos2dx_cpp_Tapsell_onAdShowFinished(
-    JNIEnv *env, jobject thiz, jstring jZoneId, jstring jAdId,
-    jboolean completed, jboolean rewarded);
+        JNIEnv *env, jobject thiz, jstring jZoneId, jstring jAdId,
+        jboolean completed, jboolean rewarded);
 };
 
 JNIEXPORT void JNICALL Java_org_cocos2dx_cpp_Tapsell_onAdShowFinished(
-    JNIEnv *env, jobject thiz, jstring jZoneId, jstring jAdId,
-    jboolean completed, jboolean rewarded) {
+        JNIEnv *env, jobject thiz, jstring jZoneId, jstring jAdId,
+        jboolean completed, jboolean rewarded) {
   std::string zoneId = env->GetStringUTFChars(jZoneId, NULL);
   std::string adId = env->GetStringUTFChars(jAdId, NULL);
   if (Tapsell::onAdShowFinishedCb != nullptr) {
@@ -28,11 +38,11 @@ JNIEXPORT void JNICALL Java_org_cocos2dx_cpp_Tapsell_onAdShowFinished(
 
 extern "C" {
 JNIEXPORT void JNICALL Java_org_cocos2dx_cpp_Tapsell_onAdAvailable(
-    JNIEnv *env, jobject thiz, jstring jZoneId, jstring jAdId);
+        JNIEnv *env, jobject thiz, jstring jZoneId, jstring jAdId);
 };
 
 JNIEXPORT void JNICALL Java_org_cocos2dx_cpp_Tapsell_onAdAvailable(
-    JNIEnv *env, jobject thiz, jstring jZoneId, jstring jAdId) {
+        JNIEnv *env, jobject thiz, jstring jZoneId, jstring jAdId) {
   std::string zoneId = env->GetStringUTFChars(jZoneId, NULL);
   std::string adId = env->GetStringUTFChars(jAdId, NULL);
   if (Tapsell::onAdAvailableCbs.find(zoneId) !=
@@ -63,11 +73,11 @@ JNIEXPORT void JNICALL Java_org_cocos2dx_cpp_Tapsell_onError(JNIEnv *env,
 
 extern "C" {
 JNIEXPORT void JNICALL Java_org_cocos2dx_cpp_Tapsell_onNoAdAvailable(
-    JNIEnv *env, jobject thiz, jstring jZoneId);
+        JNIEnv *env, jobject thiz, jstring jZoneId);
 };
 
 JNIEXPORT void JNICALL Java_org_cocos2dx_cpp_Tapsell_onNoAdAvailable(
-    JNIEnv *env, jobject thiz, jstring jZoneId) {
+        JNIEnv *env, jobject thiz, jstring jZoneId) {
   std::string zoneId = env->GetStringUTFChars(jZoneId, NULL);
   if (Tapsell::onNoAdAvailableCbs.find(zoneId) !=
       Tapsell::onNoAdAvailableCbs.end()) {
@@ -78,11 +88,11 @@ JNIEXPORT void JNICALL Java_org_cocos2dx_cpp_Tapsell_onNoAdAvailable(
 
 extern "C" {
 JNIEXPORT void JNICALL Java_org_cocos2dx_cpp_Tapsell_onNoNetwork(
-    JNIEnv *env, jobject thiz, jstring jZoneId);
+        JNIEnv *env, jobject thiz, jstring jZoneId);
 };
 
 JNIEXPORT void JNICALL Java_org_cocos2dx_cpp_Tapsell_onNoNetwork(
-    JNIEnv *env, jobject thiz, jstring jZoneId) {
+        JNIEnv *env, jobject thiz, jstring jZoneId) {
   std::string zoneId = env->GetStringUTFChars(jZoneId, NULL);
   if (Tapsell::onNoNetworkCbs.find(zoneId) != Tapsell::onNoNetworkCbs.end()) {
     Tapsell::onNoNetworkCbs[zoneId]();
@@ -145,4 +155,149 @@ JNIEXPORT void JNICALL Java_org_cocos2dx_cpp_Tapsell_onOpened(JNIEnv *env,
     Tapsell::onOpenedCbs[zoneId](adId);
     Tapsell::onOpenedCbs.erase(zoneId);
   }
+}
+
+extern "C" {
+JNIEXPORT void JNICALL Java_org_cocos2dx_cpp_Tapsell_onNativeBannerAdAvailable(
+        JNIEnv *env, jobject thiz, jstring jZoneId, jstring jAdId, jstring jTitle, jstring jDescription,
+        jstring jIconUrl, jstring jCtaText, jstring jPortraitUrl, jstring jLandscapeUrl);
+};
+
+JNIEXPORT void JNICALL Java_org_cocos2dx_cpp_Tapsell_onNativeBannerAdAvailable(
+        JNIEnv *env, jobject thiz, jstring jZoneId, jstring jAdId, jstring jTitle, jstring jDescription,
+        jstring jIconUrl, jstring jCtaText, jstring jPortraitUrl, jstring jLandscapeUrl) {
+  std::string zoneId = env->GetStringUTFChars(jZoneId, NULL);
+  std::string adId = env->GetStringUTFChars(jAdId, NULL);
+  std::string title = env->GetStringUTFChars(jTitle, NULL);
+  std::string description = env->GetStringUTFChars(jDescription, NULL);
+  std::string iconUrl = env->GetStringUTFChars(jIconUrl, NULL);
+  std::string ctaText = env->GetStringUTFChars(jCtaText, NULL);
+  std::string portraitUrl = env->GetStringUTFChars(jPortraitUrl, NULL);
+  std::string landscapeUrl = env->GetStringUTFChars(jLandscapeUrl, NULL);
+  if (Tapsell::onNativeBannerAdAvailableCbs.find(zoneId) !=
+      Tapsell::onNativeBannerAdAvailableCbs.end()) {
+    Tapsell::onNativeBannerAdAvailableCbs[zoneId](adId, title, description, iconUrl,
+                                                  ctaText, portraitUrl, landscapeUrl);
+    Tapsell::onNativeBannerAdAvailableCbs.erase(zoneId);
+  }
+}
+
+extern "C" {
+JNIEXPORT void JNICALL Java_org_cocos2dx_cpp_Tapsell_onNativeBannerError(JNIEnv *env,
+                                                                         jobject thiz,
+                                                                         jstring jZoneId,
+                                                                         jstring jError);
+};
+
+JNIEXPORT void JNICALL Java_org_cocos2dx_cpp_Tapsell_onNativeBannerError(JNIEnv *env,
+                                                                         jobject thiz,
+                                                                         jstring jZoneId,
+                                                                         jstring jError) {
+  std::string zoneId = env->GetStringUTFChars(jZoneId, NULL);
+  std::string error = env->GetStringUTFChars(jError, NULL);
+  if (Tapsell::onNativeBannerErrorCbs.find(zoneId) != Tapsell::onNativeBannerErrorCbs.end()) {
+    Tapsell::onNativeBannerErrorCbs[zoneId](error);
+    Tapsell::onNativeBannerErrorCbs.erase(zoneId);
+  }
+}
+
+extern "C" {
+JNIEXPORT void JNICALL Java_org_cocos2dx_cpp_Tapsell_onNativeBannerNoAdAvailable(
+        JNIEnv *env, jobject thiz, jstring jZoneId);
+};
+
+JNIEXPORT void JNICALL Java_org_cocos2dx_cpp_Tapsell_onNativeBannerNoAdAvailable(
+        JNIEnv *env, jobject thiz, jstring jZoneId) {
+  std::string zoneId = env->GetStringUTFChars(jZoneId, NULL);
+  if (Tapsell::onNativeBannerNoAdAvailableCbs.find(zoneId) !=
+      Tapsell::onNativeBannerNoAdAvailableCbs.end()) {
+    Tapsell::onNativeBannerNoAdAvailableCbs[zoneId]();
+    Tapsell::onNativeBannerNoAdAvailableCbs.erase(zoneId);
+  }
+}
+
+extern "C" {
+JNIEXPORT void JNICALL Java_org_cocos2dx_cpp_Tapsell_onNativeBannerNoNetwork(
+        JNIEnv *env, jobject thiz, jstring jZoneId);
+};
+
+JNIEXPORT void JNICALL Java_org_cocos2dx_cpp_Tapsell_onNativeBannerNoNetwork(
+        JNIEnv *env, jobject thiz, jstring jZoneId) {
+  std::string zoneId = env->GetStringUTFChars(jZoneId, NULL);
+  if (Tapsell::onNativeBannerNoNetworkCbs.find(zoneId) != Tapsell::onNativeBannerNoNetworkCbs.end()) {
+    Tapsell::onNativeBannerNoNetworkCbs[zoneId]();
+    Tapsell::onNativeBannerNoNetworkCbs.erase(zoneId);
+  }
+}
+
+extern "C" {
+JNIEXPORT void JNICALL Java_org_cocos2dx_cpp_Tapsell_onNativeVideoAdAvailable(
+        JNIEnv *env, jobject thiz, jstring jZoneId, jstring jAdId, jstring jTitle, jstring jDescription,
+        jstring jIconUrl, jstring jCtaText, jstring jVideoUrl);
+};
+
+JNIEXPORT void JNICALL Java_org_cocos2dx_cpp_Tapsell_onNativeVideoAdAvailable(
+        JNIEnv *env, jobject thiz, jstring jZoneId, jstring jAdId, jstring jTitle, jstring jDescription,
+        jstring jIconUrl, jstring jCtaText, jstring jVideoUrl) {
+    std::string zoneId = env->GetStringUTFChars(jZoneId, NULL);
+    std::string adId = env->GetStringUTFChars(jAdId, NULL);
+    std::string title = env->GetStringUTFChars(jTitle, NULL);
+    std::string description = env->GetStringUTFChars(jDescription, NULL);
+    std::string iconUrl = env->GetStringUTFChars(jIconUrl, NULL);
+    std::string ctaText = env->GetStringUTFChars(jCtaText, NULL);
+    std::string videoUrl = env->GetStringUTFChars(jVideoUrl, NULL);
+    if (Tapsell::onNativeVideoAdAvailableCbs.find(zoneId) !=
+        Tapsell::onNativeVideoAdAvailableCbs.end()) {
+        Tapsell::onNativeVideoAdAvailableCbs[zoneId](adId, title, description, iconUrl,
+                                                      ctaText, videoUrl);
+        Tapsell::onNativeVideoAdAvailableCbs.erase(zoneId);
+    }
+}
+
+extern "C" {
+JNIEXPORT void JNICALL Java_org_cocos2dx_cpp_Tapsell_onNativeVideoError(JNIEnv *env,
+                                                                         jobject thiz,
+                                                                         jstring jZoneId,
+                                                                         jstring jError);
+};
+
+JNIEXPORT void JNICALL Java_org_cocos2dx_cpp_Tapsell_onNativeVideoError(JNIEnv *env,
+                                                                         jobject thiz,
+                                                                         jstring jZoneId,
+                                                                         jstring jError) {
+    std::string zoneId = env->GetStringUTFChars(jZoneId, NULL);
+    std::string error = env->GetStringUTFChars(jError, NULL);
+    if (Tapsell::onNativeVideoErrorCbs.find(zoneId) != Tapsell::onNativeVideoErrorCbs.end()) {
+        Tapsell::onNativeVideoErrorCbs[zoneId](error);
+        Tapsell::onNativeVideoErrorCbs.erase(zoneId);
+    }
+}
+
+extern "C" {
+JNIEXPORT void JNICALL Java_org_cocos2dx_cpp_Tapsell_onNativeVideoNoAdAvailable(
+        JNIEnv *env, jobject thiz, jstring jZoneId);
+};
+
+JNIEXPORT void JNICALL Java_org_cocos2dx_cpp_Tapsell_onNativeVideoNoAdAvailable(
+        JNIEnv *env, jobject thiz, jstring jZoneId) {
+    std::string zoneId = env->GetStringUTFChars(jZoneId, NULL);
+    if (Tapsell::onNativeVideoNoAdAvailableCbs.find(zoneId) !=
+        Tapsell::onNativeVideoNoAdAvailableCbs.end()) {
+        Tapsell::onNativeVideoNoAdAvailableCbs[zoneId]();
+        Tapsell::onNativeVideoNoAdAvailableCbs.erase(zoneId);
+    }
+}
+
+extern "C" {
+JNIEXPORT void JNICALL Java_org_cocos2dx_cpp_Tapsell_onNativeVideoNoNetwork(
+        JNIEnv *env, jobject thiz, jstring jZoneId);
+};
+
+JNIEXPORT void JNICALL Java_org_cocos2dx_cpp_Tapsell_onNativeVideoNoNetwork(
+        JNIEnv *env, jobject thiz, jstring jZoneId) {
+    std::string zoneId = env->GetStringUTFChars(jZoneId, NULL);
+    if (Tapsell::onNativeVideoNoNetworkCbs.find(zoneId) != Tapsell::onNativeVideoNoNetworkCbs.end()) {
+        Tapsell::onNativeVideoNoNetworkCbs[zoneId]();
+        Tapsell::onNativeVideoNoNetworkCbs.erase(zoneId);
+    }
 }

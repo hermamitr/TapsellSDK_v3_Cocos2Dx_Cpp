@@ -16,6 +16,16 @@
 #define ON_OPENED_CB std::function<void(std::string)>
 #define ON_CLOSED_CB std::function<void(std::string)>
 
+#define ON_NATIVE_BANNER_AD_AVAILABLE_CB std::function<void(std::string, std::string, std::string, std::string, std::string, std::string, std::string)>
+#define ON_NATIVE_BANNER_ERROR_CB std::function<void(std::string)>
+#define ON_NATIVE_BANNER_NO_AD_AVAILABLE_CB std::function<void()>
+#define ON_NATIVE_BANNER_NO_NETWORK_CB std::function<void()>
+
+#define ON_NATIVE_VIDEO_AD_AVAILABLE_CB std::function<void(std::string, std::string, std::string, std::string, std::string, std::string)>
+#define ON_NATIVE_VIDEO_ERROR_CB std::function<void(std::string)>
+#define ON_NATIVE_VIDEO_NO_AD_AVAILABLE_CB std::function<void()>
+#define ON_NATIVE_VIDEO_NO_NETWORK_CB std::function<void()>
+
 #define ROTATION_LOCKED_PORTRAIT 1
 #define ROTATION_LOCKED_LANDSCAPE 2
 #define ROTATION_UNLOCKED 3
@@ -25,11 +35,10 @@
 
 class Tapsell {
 public:
-
     static void initialize(std::string appKey) {
         cocos2d::JniMethodInfo methodInfo;
         if (!cocos2d::JniHelper::getStaticMethodInfo(methodInfo, "org/cocos2dx/cpp/Tapsell",
-                                            "initialize", "(Ljava/lang/String;)V")) {
+                                                     "initialize", "(Ljava/lang/String;)V")) {
             CCLOG("METHOD NOT FOUND");
             return;
         }
@@ -52,7 +61,7 @@ public:
 
         cocos2d::JniMethodInfo methodInfo;
         if (!cocos2d::JniHelper::getStaticMethodInfo(methodInfo, "org/cocos2dx/cpp/Tapsell",
-                                            "requestAd", "(Ljava/lang/String;Z)V")) {
+                                                     "requestAd", "(Ljava/lang/String;Z)V")) {
             CCLOG("METHOD NOT FOUND");
             return;
         }
@@ -66,7 +75,7 @@ public:
                        bool immersive_mode, int rotation_mode, bool showExitDialog){
         cocos2d::JniMethodInfo methodInfo;
         if (!cocos2d::JniHelper::getStaticMethodInfo(methodInfo, "org/cocos2dx/cpp/Tapsell",
-                                            "showAd", "(Ljava/lang/String;ZZIZ)V")) {
+                                                     "showAd", "(Ljava/lang/String;ZZIZ)V")) {
             CCLOG("METHOD NOT FOUND");
             return;
         }
@@ -83,6 +92,97 @@ public:
         onClosedCbs[zoneId] = onClosed;
         Tapsell::showAd(zoneId, adId, back_disabled, immersive_mode, rotation_mode, showExitDialog);
     }
+
+    static void requestNativeBannerAd(std::string zoneId, ON_NATIVE_BANNER_AD_AVAILABLE_CB onAdAvailable,
+                                      ON_NATIVE_BANNER_NO_AD_AVAILABLE_CB onNoAdAvailable, ON_NATIVE_BANNER_NO_NETWORK_CB onNoNetwork,
+                                      ON_NATIVE_BANNER_ERROR_CB onError) {
+        onNativeBannerAdAvailableCbs[zoneId] = onAdAvailable;
+        onNativeBannerErrorCbs[zoneId] = onError;
+        onNativeBannerNoAdAvailableCbs[zoneId] = onNoAdAvailable;
+        onNativeBannerNoNetworkCbs[zoneId] = onNoNetwork;
+
+        cocos2d::JniMethodInfo methodInfo;
+        if (!cocos2d::JniHelper::getStaticMethodInfo(methodInfo, "org/cocos2dx/cpp/Tapsell",
+                                                     "requestNativeBannerAd", "(Ljava/lang/String;)V")) {
+            CCLOG("METHOD NOT FOUND");
+            return;
+        }
+        jstring jZoneId = methodInfo.env->NewStringUTF(zoneId.c_str());
+        methodInfo.env->CallStaticVoidMethod(methodInfo.classID, methodInfo.methodID, jZoneId);
+        methodInfo.env->DeleteLocalRef(methodInfo.classID);
+    }
+
+    static void onNativeBannerAdShown(std::string adId) {
+        cocos2d::JniMethodInfo methodInfo;
+        if (!cocos2d::JniHelper::getStaticMethodInfo(methodInfo, "org/cocos2dx/cpp/Tapsell",
+                                                     "nativeBannerAdShown", "(Ljava/lang/String;)V")) {
+            CCLOG("METHOD NOT FOUND");
+            return;
+        }
+        jstring jAdId = methodInfo.env->NewStringUTF(adId.c_str());
+        methodInfo.env->CallStaticVoidMethod(methodInfo.classID, methodInfo.methodID, jAdId);
+        methodInfo.env->DeleteLocalRef(methodInfo.classID);
+    }
+
+
+
+    static void onNativeBannerAdClicked(std::string adId) {
+        cocos2d::JniMethodInfo methodInfo;
+        if (!cocos2d::JniHelper::getStaticMethodInfo(methodInfo, "org/cocos2dx/cpp/Tapsell",
+                                                     "nativeBannerAdClicked", "(Ljava/lang/String;)V")) {
+            CCLOG("METHOD NOT FOUND");
+            return;
+        }
+        jstring jAdId = methodInfo.env->NewStringUTF(adId.c_str());
+        methodInfo.env->CallStaticVoidMethod(methodInfo.classID, methodInfo.methodID, jAdId);
+        methodInfo.env->DeleteLocalRef(methodInfo.classID);
+    }
+
+    static void requestNativeVideoAd(std::string zoneId, ON_NATIVE_VIDEO_AD_AVAILABLE_CB onAdAvailable,
+                                      ON_NATIVE_VIDEO_NO_AD_AVAILABLE_CB onNoAdAvailable, ON_NATIVE_VIDEO_NO_NETWORK_CB onNoNetwork,
+                                      ON_NATIVE_VIDEO_ERROR_CB onError) {
+        onNativeVideoAdAvailableCbs[zoneId] = onAdAvailable;
+        onNativeVideoErrorCbs[zoneId] = onError;
+        onNativeVideoNoAdAvailableCbs[zoneId] = onNoAdAvailable;
+        onNativeVideoNoNetworkCbs[zoneId] = onNoNetwork;
+
+        cocos2d::JniMethodInfo methodInfo;
+        if (!cocos2d::JniHelper::getStaticMethodInfo(methodInfo, "org/cocos2dx/cpp/Tapsell",
+                                                     "requestNativeVideoAd", "(Ljava/lang/String;)V")) {
+            CCLOG("METHOD NOT FOUND");
+            return;
+        }
+        jstring jZoneId = methodInfo.env->NewStringUTF(zoneId.c_str());
+        methodInfo.env->CallStaticVoidMethod(methodInfo.classID, methodInfo.methodID, jZoneId);
+        methodInfo.env->DeleteLocalRef(methodInfo.classID);
+    }
+
+    static void onNativeVideoAdShown(std::string adId) {
+        cocos2d::JniMethodInfo methodInfo;
+        if (!cocos2d::JniHelper::getStaticMethodInfo(methodInfo, "org/cocos2dx/cpp/Tapsell",
+                                                     "nativeVideoAdShown", "(Ljava/lang/String;)V")) {
+            CCLOG("METHOD NOT FOUND");
+            return;
+        }
+        jstring jAdId = methodInfo.env->NewStringUTF(adId.c_str());
+        methodInfo.env->CallStaticVoidMethod(methodInfo.classID, methodInfo.methodID, jAdId);
+        methodInfo.env->DeleteLocalRef(methodInfo.classID);
+    }
+
+
+
+    static void onNativeVideoAdClicked(std::string adId) {
+        cocos2d::JniMethodInfo methodInfo;
+        if (!cocos2d::JniHelper::getStaticMethodInfo(methodInfo, "org/cocos2dx/cpp/Tapsell",
+                                                     "nativeVideoAdClicked", "(Ljava/lang/String;)V")) {
+            CCLOG("METHOD NOT FOUND");
+            return;
+        }
+        jstring jAdId = methodInfo.env->NewStringUTF(adId.c_str());
+        methodInfo.env->CallStaticVoidMethod(methodInfo.classID, methodInfo.methodID, jAdId);
+        methodInfo.env->DeleteLocalRef(methodInfo.classID);
+    }
+
     static void setDebugMode(bool debug) {
         cocos2d::JniMethodInfo methodInfo;
         if (!cocos2d::JniHelper::getStaticMethodInfo(methodInfo, "org/cocos2dx/cpp/Tapsell",
@@ -95,6 +195,7 @@ public:
         methodInfo.env->DeleteLocalRef(methodInfo.classID);
 
     }
+
     static bool isDebugMode() {
         cocos2d::JniMethodInfo methodInfo;
         if (!cocos2d::JniHelper::getStaticMethodInfo(methodInfo, "org/cocos2dx/cpp/Tapsell",
@@ -192,6 +293,16 @@ public:
     static std::map<std::string, ON_EXPIRING_CB> onExpiringCbs;
     static std::map<std::string, ON_OPENED_CB> onOpenedCbs;
     static std::map<std::string, ON_CLOSED_CB> onClosedCbs;
+
+    static std::map<std::string, ON_NATIVE_BANNER_AD_AVAILABLE_CB> onNativeBannerAdAvailableCbs;
+    static std::map<std::string, ON_NATIVE_BANNER_ERROR_CB> onNativeBannerErrorCbs;
+    static std::map<std::string, ON_NATIVE_BANNER_NO_AD_AVAILABLE_CB> onNativeBannerNoAdAvailableCbs;
+    static std::map<std::string, ON_NATIVE_BANNER_NO_NETWORK_CB> onNativeBannerNoNetworkCbs;
+
+    static std::map<std::string, ON_NATIVE_VIDEO_AD_AVAILABLE_CB> onNativeVideoAdAvailableCbs;
+    static std::map<std::string, ON_NATIVE_VIDEO_ERROR_CB> onNativeVideoErrorCbs;
+    static std::map<std::string, ON_NATIVE_VIDEO_NO_AD_AVAILABLE_CB> onNativeVideoNoAdAvailableCbs;
+    static std::map<std::string, ON_NATIVE_VIDEO_NO_NETWORK_CB> onNativeVideoNoNetworkCbs;
 };
 
 
