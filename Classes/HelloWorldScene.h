@@ -2,7 +2,12 @@
 #define __HELLOWORLD_SCENE_H__
 
 #include "cocos2d.h"
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
 #include "Tapsell.h"
+#elif (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
+#include "TSTapsell.h"
+#endif
+
 
 class HelloWorld : public cocos2d::Scene {
 public:

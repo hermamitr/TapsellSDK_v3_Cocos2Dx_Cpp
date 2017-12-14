@@ -19,9 +19,13 @@ bool HelloWorld::init() {
     if (!Scene::init()) {
         return false;
     }
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
     Tapsell::initialize(APP_KEY);
     Tapsell::setDebugMode(true);
-
+#elif (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
+    TSTapsell::initialize(APP_KEY);
+    TSTapsell::setDebugMode(true);
+#endif
     auto visibleSize = Director::getInstance()->getVisibleSize();
     Vec2 origin = Director::getInstance()->getVisibleOrigin();
 
@@ -68,25 +72,43 @@ bool HelloWorld::init() {
     listener->onTouchEnded = [&](Touch* touch, Event* event){
         CCLOG("Call To Action Clicked");
         event->getCurrentTarget()->setOpacity(255);
-        if (nativeMode == "banner")
+        if (nativeMode == "banner") {
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
             Tapsell::onNativeBannerAdClicked(NATIVE_BANNER_AD_ID);
-        else if (nativeMode == "video")
+#elif (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
+            TSTapsell::onNativeBannerAdClicked(NATIVE_BANNER_AD_ID);
+#endif
+        }
+        else if (nativeMode == "video") {
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
             Tapsell::onNativeVideoAdClicked(NATIVE_VIDEO_AD_ID);
+#elif (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
+            TSTapsell::onNativeVideoAdClicked(NATIVE_VIDEO_AD_ID);
+#endif
+        }
     };
     Director::getInstance()->getEventDispatcher()->addEventListenerWithSceneGraphPriority(listener, nativeLabel);
 
     this->addChild(nativeLabel, -1);
 
-
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
     Tapsell::setRewardListener(
-            [](std::string zoneId, std::string adId, bool completed, bool rewarded) {
-                CCLOG("Reward! %d, %d", completed, rewarded);
-            });
+                               [](std::string zoneId, std::string adId, bool completed, bool rewarded) {
+                                   CCLOG("Reward! %d, %d", completed, rewarded);
+                               });
+#elif (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
+    TSTapsell::setRewardListener(
+                               [](std::string zoneId, std::string adId, bool rewarded) {
+                                   CCLOG("Reward! %d", rewarded);
+                               });
+#endif
+    
     return true;
 }
 
 void HelloWorld::requestAdCallback(Ref *pSender) {
     CCLOG("RequestAd Clicked");
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
     Tapsell::requestAd(ZONE_ID, true, [](std::string adId) {
         CCLOG("onAdAvailable");
         AD_ID = adId;
@@ -99,10 +121,24 @@ void HelloWorld::requestAdCallback(Ref *pSender) {
     }, [](std::string adId) {
         CCLOG("onExpiring");
     });
+#elif (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
+    TSTapsell::requestAd(ZONE_ID, true, [](std::string adId) {
+        CCLOG("onAdAvailable");
+        AD_ID = adId;
+    }, []() {
+        CCLOG("onNoAdAvailable");
+    }, [](std::string error) {
+        CCLOG("onError: %s", error.c_str());
+    }, [](std::string adId) {
+        CCLOG("onExpiring");
+    });
+#endif
+    
 }
 
 void HelloWorld::showAdCallback(Ref *pSender) {
     CCLOG("ShowAd Clicked");
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
     Tapsell::showAd(ZONE_ID, AD_ID, false, false, ROTATION_UNLOCKED, true,
                     [](std::string adId) {
                         CCLOG("onOpened");
@@ -110,11 +146,22 @@ void HelloWorld::showAdCallback(Ref *pSender) {
                     [](std::string adId) {
                         CCLOG("onClosed");
                     });
+#elif (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
+    TSTapsell::showAd(ZONE_ID, AD_ID, false, false, ROTATION_UNLOCKED, true,
+                    [](std::string adId) {
+                        CCLOG("onOpened");
+                    },
+                    [](std::string adId) {
+                        CCLOG("onClosed");
+                    });
+#endif
+    
 }
 
 void HelloWorld::requestNativeBannerCallback(Ref *pSender) {
     CCLOG("RequestNativeBannerAd Clicked");
     nativeMode = "banner";
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
     Tapsell::requestNativeBannerAd(NATIVE_BANNER_ZONEID, [](std::string adId,std::string title, std::string description, std::string iconUrl,
                                                             std::string ctaText, std::string portraitUrl, std::string landscapeUrl){
         CCLOG("onNativeBannerAdAvailable: adId: %s title: %s description: %s iconUrl: %s ctaText: %s portraitUrl: %s landscape: %s", adId.c_str(), title.c_str(), description.c_str(), iconUrl.c_str(),
@@ -129,13 +176,28 @@ void HelloWorld::requestNativeBannerCallback(Ref *pSender) {
     }, [](std::string error) {
         CCLOG("onError: %s", error.c_str());
     });
+#elif (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
+    TSTapsell::requestNativeBannerAd(NATIVE_BANNER_ZONEID, [](std::string adId,std::string title, std::string description, std::string iconUrl,
+                                                            std::string ctaText, std::string portraitUrl, std::string landscapeUrl){
+        CCLOG("onNativeBannerAdAvailable: adId: %s title: %s description: %s iconUrl: %s ctaText: %s portraitUrl: %s landscape: %s", adId.c_str(), title.c_str(), description.c_str(), iconUrl.c_str(),
+              ctaText.c_str(), portraitUrl.c_str(), landscapeUrl.c_str());
+        nativeLabelG->setString(title.c_str());
+        NATIVE_BANNER_AD_ID = adId;
+        TSTapsell::onNativeBannerAdShown(adId);
+    }, [](){
+        CCLOG("onNoNativeBannerAdAvailable");
+    }, [](std::string error) {
+        CCLOG("onError: %s", error.c_str());
+    });
+#endif
 }
 
 void HelloWorld::requestNativeVideoCallback(Ref *pSender) {
     CCLOG("RequestNativeVideoAd Clicked");
     nativeMode = "video";
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
     Tapsell::requestNativeVideoAd(NATIVE_VIDEO_ZONEID, [](std::string adId,std::string title, std::string description, std::string iconUrl,
-                                                            std::string ctaText, std::string videoUrl){
+                                                          std::string ctaText, std::string videoUrl){
         CCLOG("onNativeVideoAdAvailable: adId: %s title: %s description: %s iconUrl: %s ctaText: %s videoUrl: %s", adId.c_str(), title.c_str(), description.c_str(), iconUrl.c_str(),
               ctaText.c_str(), videoUrl.c_str());
         nativeLabelG->setString(title.c_str());
@@ -148,4 +210,18 @@ void HelloWorld::requestNativeVideoCallback(Ref *pSender) {
     }, [](std::string error) {
         CCLOG("onError: %s", error.c_str());
     });
+#elif (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
+    TSTapsell::requestNativeVideoAd(NATIVE_VIDEO_ZONEID, [](std::string adId,std::string title, std::string description, std::string iconUrl,
+                                                          std::string ctaText, std::string videoUrl){
+        CCLOG("onNativeVideoAdAvailable: adId: %s title: %s description: %s iconUrl: %s ctaText: %s videoUrl: %s", adId.c_str(), title.c_str(), description.c_str(), iconUrl.c_str(),
+              ctaText.c_str(), videoUrl.c_str());
+        nativeLabelG->setString(title.c_str());
+        NATIVE_VIDEO_AD_ID = adId;
+        TSTapsell::onNativeVideoAdShown(adId);
+    }, [](){
+        CCLOG("onNoNativeVideoAdAvailable");
+    }, [](std::string error) {
+        CCLOG("onError: %s", error.c_str());
+    });
+#endif
 }
