@@ -172,6 +172,11 @@ public class Tapsell {
         });
     }
 
+    public static void requestStandardBannerAd(final String zoneId, final int bannerType,
+                                               final int horizontalGravity, final int verticalGravity) {
+        tapsellCocos2DModule.requestBannerAd(app, zoneId, bannerType, horizontalGravity, verticalGravity);
+    }
+
     public static void setDebugMode(boolean debug) {
         tapsellCocos2DModule.setDebugMode(debug);
     }

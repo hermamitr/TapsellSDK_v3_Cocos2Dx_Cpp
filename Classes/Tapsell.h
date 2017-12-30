@@ -32,6 +32,16 @@
 #define ROTATION_LOCKED_REVERSED_LANDSCAPE 4
 #define ROTATION_LOCKED_REVERSED_PORTRAIT 5
 
+#define BANNER_320x50 1
+#define BANNER_320x100 2
+#define BANNER_250x250 3
+#define BANNER_300x250 4
+
+#define TOP 1
+#define BOTTOM 2
+#define LEFT 3
+#define RIGHT 4
+#define CENTER 5
 
 class Tapsell {
 public:
@@ -180,6 +190,20 @@ public:
         }
         jstring jAdId = methodInfo.env->NewStringUTF(adId.c_str());
         methodInfo.env->CallStaticVoidMethod(methodInfo.classID, methodInfo.methodID, jAdId);
+        methodInfo.env->DeleteLocalRef(methodInfo.classID);
+    }
+
+    static void requestStandardBannerAd(std::string zoneId, int bannerType,
+                                        int horizontalGravity, int verticalGravity) {
+        cocos2d::JniMethodInfo methodInfo;
+        if (!cocos2d::JniHelper::getStaticMethodInfo(methodInfo, "org/cocos2dx/cpp/Tapsell",
+                                                     "requestStandardBannerAd", "(Ljava/lang/String;III)V")) {
+            CCLOG("METHOD NOT FOUND");
+            return;
+        }
+        jstring jAdId = methodInfo.env->NewStringUTF(zoneId.c_str());
+        methodInfo.env->CallStaticVoidMethod(methodInfo.classID, methodInfo.methodID, jAdId,
+                                             bannerType, horizontalGravity, verticalGravity);
         methodInfo.env->DeleteLocalRef(methodInfo.classID);
     }
 

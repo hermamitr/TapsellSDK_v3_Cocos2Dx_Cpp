@@ -7,6 +7,7 @@ const std::string APP_KEY =
 const std::string ZONE_ID = "59b4d07d468465281b792cb7";
 const std::string NATIVE_BANNER_ZONEID = "59c8a9334684656c504f0e19";
 const std::string NATIVE_VIDEO_ZONEID = "59c8ae514684656c504fce40";
+const std::string STANDARD_BANNER_ZONEID = "5a44aa6565a77100013d5fb3";
 std::string AD_ID = "";
 std::string NATIVE_BANNER_AD_ID = "";
 std::string NATIVE_VIDEO_AD_ID = "";
@@ -45,13 +46,13 @@ bool HelloWorld::init() {
     requestNativeBannerAd->setFontSize(16);
     requestNativeVideoAd->setFontSize(16);
     requestAdBtn->setPosition(Vec2(origin.x + visibleSize.width / 2,
-                                   visibleSize.height * 4 / 5 + origin.y));
+                                   visibleSize.height * 6 / 7 + origin.y));
     showAdBtn->setPosition(Vec2(origin.x + visibleSize.width / 2,
-                                visibleSize.height * 3 / 5 + origin.y));
+                                visibleSize.height * 5 / 7 + origin.y));
     requestNativeBannerAd->setPosition(Vec2(origin.x + visibleSize.width / 2,
-                                            visibleSize.height * 2 / 5 + origin.y));
+                                            visibleSize.height * 4 / 7 + origin.y));
     requestNativeVideoAd->setPosition(Vec2(origin.x + visibleSize.width / 2,
-                                            visibleSize.height / 5 + origin.y));
+                                            visibleSize.height * 3 / 7 + origin.y));
     items.pushBack(requestAdBtn);
     items.pushBack(showAdBtn);
     items.pushBack(requestNativeBannerAd);
@@ -62,12 +63,14 @@ bool HelloWorld::init() {
     this->addChild(menu, 1);
 
     auto nativeLabel = Label::createWithSystemFont("Native Ad Title", "Arial", 18);
-    nativeLabel->setPosition(Vec2(origin.x + visibleSize.width / 2, origin.y + visibleSize.height / 12));
+    nativeLabel->setPosition(Vec2(origin.x + visibleSize.width / 2, origin.y + visibleSize.height * 2 / 7));
     nativeLabelG = nativeLabel;
     auto listener = EventListenerTouchOneByOne::create();
     listener->onTouchBegan = [&](Touch* touch, Event* event){
-        event->getCurrentTarget()->setOpacity(180);
-        return this->getBoundingBox().containsPoint(this->convertTouchToNodeSpace(touch));
+        bool touchedTarget = event->getCurrentTarget()->getBoundingBox().containsPoint(this->convertTouchToNodeSpace(touch));
+        if (touchedTarget)
+            event->getCurrentTarget()->setOpacity(180);
+        return touchedTarget;
     };
     listener->onTouchEnded = [&](Touch* touch, Event* event){
         CCLOG("Call To Action Clicked");
@@ -89,7 +92,7 @@ bool HelloWorld::init() {
     };
     Director::getInstance()->getEventDispatcher()->addEventListenerWithSceneGraphPriority(listener, nativeLabel);
 
-    this->addChild(nativeLabel, -1);
+    this->addChild(nativeLabel);
 
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
     Tapsell::setRewardListener(
@@ -101,6 +104,12 @@ bool HelloWorld::init() {
                                [](std::string zoneId, std::string adId, bool rewarded) {
                                    CCLOG("Reward! %d", rewarded);
                                });
+#endif
+
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
+    Tapsell::requestStandardBannerAd(STANDARD_BANNER_ZONEID, BANNER_320x50, BOTTOM, CENTER);
+#elif (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
+
 #endif
     
     return true;
