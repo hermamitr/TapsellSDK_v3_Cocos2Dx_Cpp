@@ -135,6 +135,12 @@ void TSTapsell::setAppUserId(std::string appUserId) {
     [Tapsell setAppUserId:[NSString stringWithCString:appUserId.c_str()
                                              encoding:[NSString defaultCStringEncoding]]];
 }
+
+void TSTapsell::requestStandardBannerAd(std::string zoneId, int bannerType,
+                                        int horizontalGravity, int verticalGravity) {
+    [TSBannerAdView loadAdWithZoneId:[NSString stringWithCString:zoneId.c_str() encoding:[NSString defaultCStringEncoding]] andBannerType:[NSNumber numberWithInteger:bannerType] andHorizGravity:[NSNumber numberWithInteger:horizontalGravity] andVertGravity:[NSNumber numberWithInteger:verticalGravity]];
+}
+
 std::string TSTapsell::getAppUserId() {
     return [[Tapsell getAppUserId] UTF8String];
 }

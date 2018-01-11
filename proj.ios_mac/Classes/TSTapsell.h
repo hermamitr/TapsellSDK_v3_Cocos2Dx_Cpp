@@ -21,6 +21,16 @@
 #define ROTATION_LOCKED_REVERSED_LANDSCAPE 4
 #define ROTATION_LOCKED_REVERSED_PORTRAIT 5
 
+#define TSBANNER_320x50 1
+#define TSBANNER_320x100 2
+#define TSBANNER_250x250 3
+#define TSBANNER_300x250 4
+
+#define TOP 1
+#define BOTTOM 2
+#define LEFT 3
+#define RIGHT 4
+#define CENTER 5
 
 class TSTapsell {
 public:
@@ -52,6 +62,8 @@ public:
     static void onNativeVideoAdShown(std::string adId);
     static void onNativeVideoAdClicked(std::string adId);
     
+    static void requestStandardBannerAd(std::string zoneId, int bannerType,
+                                        int horizontalGravity, int verticalGravity);
     static void setDebugMode(bool debug);
     static bool isDebugMode();
     static void setAppUserId(std::string appUserId);

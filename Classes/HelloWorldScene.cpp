@@ -109,7 +109,7 @@ bool HelloWorld::init() {
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
     Tapsell::requestStandardBannerAd(STANDARD_BANNER_ZONEID, BANNER_320x50, BOTTOM, CENTER);
 #elif (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
-
+    TSTapsell::requestStandardBannerAd(STANDARD_BANNER_ZONEID, TSBANNER_320x50, BOTTOM, CENTER);
 #endif
     
     return true;
