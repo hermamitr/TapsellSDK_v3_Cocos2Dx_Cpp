@@ -1,10 +1,10 @@
 <div dir="rtl">
 <h1>مستندات راه‌اندازی تبلیغات تپسل در Cocos2D-x</h1>
 (نسخه اندروید: ۳.۰.۳۲) پشتیبانی از اندروید ۲.۳ و بالاتر
- ]کتابخانه تپسل از نسخه اندروید ۲.۳ و بالاتر پشتیبانی می‌کند و در نتیجه بر روی تقریبا تمامی دستگاه‌های فعال روی مارکت
+ کتابخانه تپسل از نسخه اندروید ۲.۳ و بالاتر پشتیبانی می‌کند و در نتیجه بر روی تقریبا تمامی دستگاه‌های فعال روی مارکت
 قابل اجرا است.نسخه نرم افزار Cocos2D-x و کتابخانه اندروید مورد نیاز
 جهت استفاده از SDK تپسل و تهیه خروجی اندروید در Cocos2D-x می‌بایست از build tools نسخه ۲۳ و بالاتر
-و همچنین نسخه ۳ و بالاتر Cocos2D-x استفاده کنید. فهرست مطالب
+و همچنین نسخه ۳ و بالاتر Cocos2D-x استفاده کنید.
 
 فهرست مطالب
 <ul>
@@ -68,7 +68,6 @@
 <code>Tapsell.newInstance</code> را صدا بزنید :
 <pre style="color: #000000; background: #ffffff;" dir="ltr"><span style="color: #696969;">// AppActivity.java</span>
 <span style="color: #800000; font-weight: bold;">public</span> <span style="color: #800000; font-weight: bold;">class</span> AppActivity <span style="color: #800000; font-weight: bold;">extends</span> Cocos2dxActivity <span style="color: #800080;">{</span>
-
     <span style="color: #808030;">@</span>Override
     <span style="color: #800000; font-weight: bold;">protected</span> <span style="color: #bb7977;">void</span> onCreate<span style="color: #808030;">(</span>Bundle savedInstanceState<span style="color: #808030;">)</span> <span style="color: #800080;">{</span>
         <span style="color: #800000; font-weight: bold;">super</span><span style="color: #808030;">.</span>onCreate<span style="color: #808030;">(</span>savedInstanceState<span style="color: #808030;">)</span><span style="color: #800080;">;</span>
